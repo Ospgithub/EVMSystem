@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Management Frontend</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #eef1f7;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(135deg, #3f51b5, #5c6bc0);
+      color: white;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      letter-spacing: 1px;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    nav button {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      cursor: pointer;
+      background: #f5f5f5;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+    nav button.active {
+      background: #3f51b5;
+      color: white;
+      box-shadow: inset 0 -3px #283593;
+    }
+    nav button:hover {
+      background: #e8eaf6;
+    }
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      margin: 1.5rem 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      animation: fadeIn 0.3s ease-in;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #3f51b5;
+      font-size: 1.3rem;
+      border-left: 4px solid #3f51b5;
+      padding-left: 8px;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.3s ease;
+    }
+    textarea:focus, input:focus {
+      border-color: #3f51b5;
+      box-shadow: 0 0 5px rgba(63,81,181,0.3);
+    }
+    button.action {
+      background: linear-gradient(135deg, #3f51b5, #3949ab);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+      margin-top: 0.5rem;
+    }
+    button.action:hover {
+      background: linear-gradient(135deg, #2c3a91, #1a237e);
+      transform: translateY(-2px);
+    }
+    .out {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <header>🎉 Event Management System</header>
+  <nav>
+    <button id="tab-events" class="active" onclick="showTab('events')">📅 Events</button>
+    <button id="tab-attendees" onclick="showTab('attendees')">🧑 Attendees</button>
+    <button id="tab-organizers" onclick="showTab('organizers')">👩‍💼 Organizers</button>
+  </nav>
+
+  <main>
+    <!-- EVENTS CONTROLLER -->
+    <section id="events" class="tab-content">
+      <div class="card">
+        <h2>Create Event (POST)</h2>
+        <textarea id="createEventInput" rows="3">{ "name": "Birthday Party", "location": "Hall A", "date": "2025-09-10" }</textarea>
+        <button class="action" onclick="createItem('events')">Create Event</button>
+        <div id="createEventOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Get Event (GET)</h2>
+        <input type="number" id="getEventId" placeholder="Enter Event ID">
+        <button class="action" onclick="getItem('events')">Fetch Event</button>
+        <div id="getEventOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Update Event (PUT)</h2>
+        <input type="number" id="updateEventId" placeholder="Event ID">
+        <textarea id="updateEventInput" rows="3">{ "name": "Updated Party", "location": "Hall B", "date": "2025-09-12" }</textarea>
+        <button class="action" onclick="updateItem('events')">Update Event</button>
+        <div id="updateEventOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Delete Event (DELETE)</h2>
+        <input type="number" id="deleteEventId" placeholder="Enter Event ID">
+        <button class="action" onclick="deleteItem('events')">Delete Event</button>
+        <div id="deleteEventOut" class="out"></div>
+      </div>
+    </section>
+
+    <!-- ATTENDEES CONTROLLER -->
+    <section id="attendees" class="tab-content" style="display:none;">
+      <div class="card">
+        <h2>Register Attendee (POST)</h2>
+        <textarea id="createAttendeeInput" rows="2">{ "name": "Alice", "email": "alice@example.com" }</textarea>
+        <button class="action" onclick="createItem('attendees')">Add Attendee</button>
+        <div id="createAttendeeOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Get Attendee (GET)</h2>
+        <input type="number" id="getAttendeeId" placeholder="Enter Attendee ID">
+        <button class="action" onclick="getItem('attendees')">Fetch Attendee</button>
+        <div id="getAttendeeOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Update Attendee (PUT)</h2>
+        <input type="number" id="updateAttendeeId" placeholder="Attendee ID">
+        <textarea id="updateAttendeeInput" rows="2">{ "name": "Alice Updated", "email": "alice.new@example.com" }</textarea>
+        <button class="action" onclick="updateItem('attendees')">Update Attendee</button>
+        <div id="updateAttendeeOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Delete Attendee (DELETE)</h2>
+        <input type="number" id="deleteAttendeeId" placeholder="Enter Attendee ID">
+        <button class="action" onclick="deleteItem('attendees')">Delete Attendee</button>
+        <div id="deleteAttendeeOut" class="out"></div>
+      </div>
+    </section>
+
+    <!-- ORGANIZERS CONTROLLER -->
+    <section id="organizers" class="tab-content" style="display:none;">
+      <div class="card">
+        <h2>Add Organizer (POST)</h2>
+        <textarea id="createOrganizerInput" rows="2">{ "name": "John Doe", "role": "Coordinator" }</textarea>
+        <button class="action" onclick="createItem('organizers')">Add Organizer</button>
+        <div id="createOrganizerOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Get Organizer (GET)</h2>
+        <input type="number" id="getOrganizerId" placeholder="Enter Organizer ID">
+        <button class="action" onclick="getItem('organizers')">Fetch Organizer</button>
+        <div id="getOrganizerOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Update Organizer (PUT)</h2>
+        <input type="number" id="updateOrganizerId" placeholder="Organizer ID">
+        <textarea id="updateOrganizerInput" rows="2">{ "name": "John Updated", "role": "Manager" }</textarea>
+        <button class="action" onclick="updateItem('organizers')">Update Organizer</button>
+        <div id="updateOrganizerOut" class="out"></div>
+      </div>
+      <div class="card">
+        <h2>Delete Organizer (DELETE)</h2>
+        <input type="number" id="deleteOrganizerId" placeholder="Enter Organizer ID">
+        <button class="action" onclick="deleteItem('organizers')">Delete Organizer</button>
+        <div id="deleteOrganizerOut" class="out"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>🚀 Powered by Spring Boot + Interactive Vanilla JS</footer>
+
+  <script>
+    const baseUrls = {
+      events: "http://localhost:8080/events",
+      attendees: "http://localhost:8080/attendees",
+      organizers: "http://localhost:8080/organizers"
+    };
+
+    function showTab(tab) {
+      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+      document.querySelector(`#tab-${tab}`).classList.add("active");
+      document.querySelectorAll(".tab-content").forEach(sec => sec.style.display = "none");
+      document.getElementById(tab).style.display = "block";
+    }
+
+    async function createItem(type) {
+      const out = document.getElementById(`create${capitalize(type)}Out`);
+      const data = document.getElementById(`create${capitalize(type)}Input`).value;
+      try {
+        const res = await fetch(baseUrls[type], {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: data
+        });
+        out.textContent = JSON.stringify(await res.json(), null, 2);
+      } catch (e) {
+        out.textContent = "Error: " + e;
+      }
+    }
+
+    async function getItem(type) {
+      const id = document.getElementById(`get${capitalize(type)}Id`).value;
+      const out = document.getElementById(`get${capitalize(type)}Out`);
+      try {
+        const res = await fetch(`${baseUrls[type]}/${id}`);
+        out.textContent = JSON.stringify(await res.json(), null, 2);
+      } catch (e) {
+        out.textContent = "Error: " + e;
+      }
+    }
+
+    async function updateItem(type) {
+      const id = document.getElementById(`update${capitalize(type)}Id`).value;
+      const data = document.getElementById(`update${capitalize(type)}Input`).value;
+      const out = document.getElementById(`update${capitalize(type)}Out`);
+      try {
+        const res = await fetch(`${baseUrls[type]}/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: data
+        });
+        out.textContent = JSON.stringify(await res.json(), null, 2);
+      } catch (e) {
+        out.textContent = "Error: " + e;
+      }
+    }
+
+    async function deleteItem(type) {
+      const id = document.getElementById(`delete${capitalize(type)}Id`).value;
+      const out = document.getElementById(`delete${capitalize(type)}Out`);
+      try {
+        const res = await fetch(`${baseUrls[type]}/${id}`, { method: "DELETE" });
+        out.textContent = res.ok ? `✅ ${capitalize(type)} ${id} deleted successfully` : `❌ Error: ${res.status}`;
+      } catch (e) {
+        out.textContent = "Error: " + e;
+      }
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+  </script>
+</body>
+</html>
