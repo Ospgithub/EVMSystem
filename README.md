@@ -28,6 +28,6 @@ Backend: Spring Boot (Java)
 
 Frontend: HTML, CSS (basic UI)
 
-Database: H2 / MySQL (configurable)
+Database: MySQL (configurable)
 
 Build Tool: Maven
